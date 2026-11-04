@@ -1,0 +1,79 @@
+\chapter{Réalisation}
+
+\section{Introduction}
+
+Ce chapitre présente la mise en œuvre : sécurité, modules métier, interface selon le rôle, assistant et journal d'activités.
+
+\section{Authentification et sécurité}
+
+L'utilisateur s'identifie par courriel et mot de passe. Le serveur vérifie le mot de passe haché, génère un JWT et le client le transmet dans l'en-tête \texttt{Authorization}. Les routes \texttt{/api/v1/auth/} restent accessibles sans jeton. Le jeton suit le standard JWT \cite{jwt}. La configuration CORS autorise les origines locales (\texttt{localhost} et \texttt{127.0.0.1}) afin que le front de développement puisse appeler l'API. Les contrôleurs restreignent les opérations selon les autorités Spring Security correspondant aux rôles.
+
+\section{Gestion des utilisateurs et des rôles}
+
+L'administrateur crée et met à jour les comptes, active ou désactive un utilisateur, et assigne un ou plusieurs rôles. Cette fonction n'est pas exposée au responsable transport ni au chauffeur, afin de limiter la surface d'administration.
+
+\section{Clients, chauffeurs et véhicules}
+
+\subsection{Clients}
+
+Un client est identifié par le nom de l'entreprise, une adresse, un téléphone et un courriel optionnel. Il est obligatoire sur chaque mission.
+
+\subsection{Chauffeurs}
+
+Le chauffeur porte un numéro de permis, une date d'expiration, une ancienneté et un statut (disponible, en mission, indisponible, suspendu). Le lien optionnel avec un \texttt{User} permet la connexion à l'espace chauffeur.
+
+\subsection{Véhicules}
+
+Le véhicule est caractérisé par l'immatriculation, le type, la capacité, le kilométrage, des dates d'assurance et de visite technique, et un statut d'exploitation. Ces dates alimentent les rappels du tableau de bord.
+
+\section{Missions}
+
+La mission possède une référence unique, un trajet (départ, destination), une date planifiée, un tonnage et un type de marchandise optionnels. Le responsable et l'administrateur créent et modifient les champs. Le changement de statut du chauffeur passe par une ressource dédiée : il peut passer une mission qui lui est affectée de planifiée à en cours, puis à terminée. L'annulation reste du ressort de l'exploitation.
+
+\section{Tableau de bord, alertes et journal}
+
+Le tableau de bord affiche des indicateurs, des graphiques (activité de la semaine, répartition des statuts), les prochaines missions et les rappels (permis, assurance, contrôle technique). Le journal d'activités liste les événements avec un libellé d'objet lisible (référence de mission, nom, immatriculation, entreprise, courriel) plutôt qu'un identifiant technique seul.
+
+\section{Assistant IA}
+
+L'assistant est réservé à l'administrateur et au responsable transport. Il s'appuie sur un extrait des missions, chauffeurs, véhicules et clients. Lorsqu'une clé de modèle de langage est configurée, les réponses sont générées à partir de ce contexte ; sinon, des règles déterministes couvrent les questions fréquentes (effectifs, suggestions). L'objectif pédagogique et opérationnel est d'«~ancrer~» l'IA sur le SI, afin de limiter les hallucinations. Les échanges correspondants sont ceux de la figure~\ref{fig:seq-assistant}.
+
+\section{Organisation du code et API}
+
+Le backend est structuré par packages métier (\texttt{auth}, \texttt{user}, \texttt{role}, \texttt{client}, \texttt{driver}, \texttt{vehicle}, \texttt{mission}, \texttt{activity}, assistant). Chaque module typique expose un contrôleur REST, un service et un dépôt JPA. Le préfixe public est \texttt{/api/v1}. Le tableau~\ref{tab:api} donne un extrait des ressources.
+
+\begin{table}[htbp]
+\centering
+\caption{Extrait des ressources REST}
+\label{tab:api}
+\begin{tabular}{|p{0.40\textwidth}|p{0.18\textwidth}|p{0.32\textwidth}|}
+\hline
+\TableHead
+\tht{Ressource} & \tht{Méthode} & \tht{Usage} \\
+\hline
+\texttt{/auth/login} & POST & Authentification, JWT \\
+\hline
+\texttt{/users} & GET, POST, PATCH & Comptes (admin) \\
+\hline
+\texttt{/clients}, \texttt{/drivers}, \texttt{/vehicles} & CRUD & Référentiels \\
+\hline
+\texttt{/missions} & CRUD & Planification \\
+\hline
+\texttt{/missions/\{id\}/status} & PATCH & Statut (dont chauffeur) \\
+\hline
+\texttt{/activities} & GET & Journal lecture seule \\
+\hline
+\texttt{/assistant} & POST & Question / suggestions \\
+\hline
+\end{tabular}
+\end{table}
+
+Les écrans React (listes, formulaires, tableau de bord, assistant) consomment ces ressources via un client HTTP unique, qui attache le jeton sauf sur le login.
+
+\section{Interface utilisateur}
+
+L'interface distingue la navigation : le chauffeur accède au tableau de bord, à ses missions et à son profil ; les autres rôles voient en plus les menus d'exploitation, le journal et l'assistant. Les formulaires de saisie et les listes correspondent aux ressources de l'API. Les messages d'erreur HTTP (par exemple un refus d'authentification) sont traduits pour l'utilisateur.
+
+\section{Conclusion}
+
+La réalisation couvre la chaîne authentification--métier--pilotage--assistant, avec une séparation claire des droits. Le chapitre suivant évalue la qualité logicielle et le déploiement.

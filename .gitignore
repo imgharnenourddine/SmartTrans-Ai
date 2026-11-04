@@ -1,0 +1,49 @@
+.env
+.idea/
+
+# LaTeX build artifacts
+docs/rapport-stage/*.aux
+docs/rapport-stage/*.log
+docs/rapport-stage/*.toc
+docs/rapport-stage/*.lof
+docs/rapport-stage/*.lot
+docs/rapport-stage/*.los
+docs/rapport-stage/*.out
+docs/rapport-stage/*.synctex.gz
+
+
+# Secrets et configuration locale
+.env
+.env.*
+!.env.example
+!.env.prod.example
+**/application-local.yml
+**/application-secrets.yml
+*.pem
+*.key
+*.p12
+*.jks
+
+# Backend Java
+**/target/
+*.class
+*.log
+
+# Frontend
+**/node_modules/
+**/dist/
+**/coverage/
+
+# IDE et OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Terraform (futur)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log

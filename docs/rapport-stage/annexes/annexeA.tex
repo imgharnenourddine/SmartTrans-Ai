@@ -1,0 +1,76 @@
+\chapter*{Annexe A}
+\addcontentsline{toc}{chapter}{Annexe A --- Guide technique de déploiement et d'exécution}
+
+\noindent Cette annexe décrit le guide technique de déploiement et d'exécution de SmartTrans-AI.
+
+\section*{A.1 Backend}
+
+\subsection*{Prérequis}
+
+\begin{itemize}
+  \item Java 25 ;
+  \item Maven Wrapper fourni dans le dépôt ;
+  \item PostgreSQL, via Docker Compose en environnement de développement ou via une instance locale.
+\end{itemize}
+
+\subsection*{Lancement}
+
+Depuis le répertoire \texttt{backend} :
+
+\begin{verbatim}
+./mvnw spring-boot:run
+\end{verbatim}
+
+\subsection*{Vérification de l'état de l'application}
+
+L'état de santé de l'API peut être vérifié à l'adresse :
+
+\url{http://127.0.0.1:8080/actuator/health}
+
+\subsection*{Documentation de l'API}
+
+La documentation OpenAPI/Swagger est accessible à :
+
+\url{http://127.0.0.1:8080/swagger-ui.html}
+
+L'API est accessible sous le préfixe \texttt{/api/v1}.
+
+\subsection*{Compte administrateur de démonstration}
+
+Un compte administrateur est disponible en environnement de développement :
+
+\texttt{admin@smarttrans.ai}
+
+Le mot de passe est défini dans la configuration locale de l'application.
+
+\section*{A.2 Frontend}
+
+Depuis le répertoire \texttt{frontend}, installer les dépendances :
+
+\begin{verbatim}
+npm install
+\end{verbatim}
+
+Puis lancer l'application :
+
+\begin{verbatim}
+npm run dev
+\end{verbatim}
+
+L'interface est accessible à l'adresse :
+
+\url{http://127.0.0.1:5173}
+
+Le proxy Vite relaie les requêtes \texttt{/api} vers le backend exécuté sur le port \texttt{8080}.
+
+\section*{A.3 Stack Docker}
+
+Le fichier \texttt{docker-compose.prod.yml} permet d'assembler les principaux services de l'application :
+
+\begin{itemize}
+  \item PostgreSQL ;
+  \item l'API backend ;
+  \item l'interface frontend.
+\end{itemize}
+
+Les informations sensibles, notamment les mots de passe et les clés secrètes, doivent être configurées à l'aide d'un fichier d'environnement non versionné.

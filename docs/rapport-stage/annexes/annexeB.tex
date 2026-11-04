@@ -1,0 +1,145 @@
+\chapter*{Annexe B}
+\addcontentsline{toc}{chapter}{Annexe B --- Documentation de l'API REST}
+
+\noindent Cette annexe documente l'API REST de SmartTrans-AI (préfixe \texttt{/api/v1}). La description interactive est également disponible via OpenAPI/Swagger : \url{http://127.0.0.1:8080/swagger-ui.html}.
+
+\section*{B.1 Conventions}
+
+\begin{itemize}
+  \item Format d'échange : JSON (\texttt{Content-Type: application/json}).
+  \item Identifiants : UUID.
+  \item Authentification : en-tête \texttt{Authorization: Bearer <jeton>}, sauf \texttt{POST /api/v1/auth/login}.
+  \item Rôles : \texttt{ADMIN}, \texttt{TRANSPORT\_MANAGER}, \texttt{DRIVER}.
+\end{itemize}
+
+\section*{B.2 Authentification}
+
+\begin{table}[htbp]
+\centering
+\caption{Authentification}
+\label{tab:api-auth}
+\begin{tabular}{|p{0.38\textwidth}|p{0.14\textwidth}|p{0.38\textwidth}|}
+\hline
+\TableHead
+\tht{Ressource} & \tht{Méthode} & \tht{Description} \\
+\hline
+\texttt{/api/v1/auth/login} & POST & Connexion ; retourne le JWT et le profil \\
+\hline
+\end{tabular}
+\end{table}
+
+\section*{B.3 Utilisateurs et rôles}
+
+Les ressources suivantes sont réservées à l'administrateur.
+
+\begin{table}[htbp]
+\centering
+\caption{Utilisateurs et rôles}
+\label{tab:api-users}
+\begin{tabular}{|p{0.38\textwidth}|p{0.14\textwidth}|p{0.38\textwidth}|}
+\hline
+\TableHead
+\tht{Ressource} & \tht{Méthode} & \tht{Description} \\
+\hline
+\texttt{/api/v1/users} & GET, POST & Liste et création des comptes \\
+\hline
+\texttt{/api/v1/users/\{id\}} & GET, PATCH, DELETE & Lecture, mise à jour, suppression \\
+\hline
+\texttt{/api/v1/roles} & GET, POST & Liste et création des rôles \\
+\hline
+\texttt{/api/v1/roles/\{id\}} & GET, PATCH, DELETE & Lecture, mise à jour, suppression \\
+\hline
+\end{tabular}
+\end{table}
+
+\section*{B.4 Référentiels métier}
+
+Clients, chauffeurs et véhicules sont gérés par l'administrateur et le responsable transport. Le chauffeur accède à son profil (\texttt{/drivers/me}), à la consultation limitée des fiches et à la mise à jour de sa disponibilité.
+
+\begin{table}[htbp]
+\centering
+\caption{Clients, chauffeurs et véhicules}
+\label{tab:api-ref}
+\begin{tabular}{|p{0.44\textwidth}|p{0.14\textwidth}|p{0.32\textwidth}|}
+\hline
+\TableHead
+\tht{Ressource} & \tht{Méthode} & \tht{Description} \\
+\hline
+\texttt{/api/v1/clients} & GET, POST & Liste et création \\
+\hline
+\texttt{/api/v1/clients/\{id\}} & GET, PATCH, DELETE & Fiche client \\
+\hline
+\texttt{/api/v1/drivers} & GET, POST & Liste et création \\
+\hline
+\texttt{/api/v1/drivers/me} & GET & Profil du chauffeur connecté \\
+\hline
+\texttt{/api/v1/drivers/expiring-licenses} & GET & Permis proches de l'échéance \\
+\hline
+\texttt{/api/v1/drivers/\{id\}} & GET, PATCH, DELETE & Fiche chauffeur \\
+\hline
+\texttt{/api/v1/drivers/\{id\}/availability} & PATCH & Disponibilité \\
+\hline
+\texttt{/api/v1/drivers/\{id\}/deactivate} & PATCH & Désactivation \\
+\hline
+\texttt{/api/v1/vehicles} & GET, POST & Liste et création \\
+\hline
+\texttt{/api/v1/vehicles/expiring-documents} & GET & Assurance / visite technique \\
+\hline
+\texttt{/api/v1/vehicles/\{id\}} & GET, PATCH, DELETE & Fiche véhicule \\
+\hline
+\texttt{/api/v1/vehicles/\{id\}/deactivate} & PATCH & Désactivation \\
+\hline
+\end{tabular}
+\end{table}
+
+\section*{B.5 Missions}
+
+Le chauffeur peut consulter les missions qui le concernent et enchaîner les statuts autorisés (planifiée $\rightarrow$ en cours $\rightarrow$ terminée). L'annulation reste du ressort de l'exploitation.
+
+\begin{table}[htbp]
+\centering
+\caption{Missions}
+\label{tab:api-missions}
+\begin{tabular}{|p{0.42\textwidth}|p{0.14\textwidth}|p{0.34\textwidth}|}
+\hline
+\TableHead
+\tht{Ressource} & \tht{Méthode} & \tht{Description} \\
+\hline
+\texttt{/api/v1/missions} & GET, POST & Liste et planification \\
+\hline
+\texttt{/api/v1/missions/\{id\}} & GET, PATCH, DELETE & Fiche mission \\
+\hline
+\texttt{/api/v1/missions/\{id\}/status} & PATCH & Changement de statut \\
+\hline
+\end{tabular}
+\end{table}
+
+\section*{B.6 Journal et assistant}
+
+Le journal est en lecture seule. L'assistant est réservé à l'administrateur et au responsable transport.
+
+\begin{table}[htbp]
+\centering
+\caption{Journal et assistant}
+\label{tab:api-pilotage}
+\begin{tabular}{|p{0.40\textwidth}|p{0.14\textwidth}|p{0.36\textwidth}|}
+\hline
+\TableHead
+\tht{Ressource} & \tht{Méthode} & \tht{Description} \\
+\hline
+\texttt{/api/v1/activities} & GET & Journal d'audit \\
+\hline
+\texttt{/api/v1/activities/\{id\}} & GET & Détail d'un événement \\
+\hline
+\texttt{/api/v1/assistant/ask} & POST & Question métier ancrée sur les données \\
+\hline
+\end{tabular}
+\end{table}
+
+\section*{B.7 Accès à la documentation interactive}
+
+Avec le backend démarré (\texttt{./mvnw spring-boot:run}), ouvrir :
+
+\url{http://127.0.0.1:8080/swagger-ui.html}
+
+L'état de l'API est indiqué par \url{http://127.0.0.1:8080/actuator/health}.

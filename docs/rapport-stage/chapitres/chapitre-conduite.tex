@@ -1,0 +1,67 @@
+\chapter{Conduite de projet}
+
+\section{Introduction}
+
+La réalisation de SmartTrans-AI s'est inscrite dans une démarche itérative, compatible avec un stage en entreprise : lots fonctionnels successifs, recette interne, puis rédaction du rapport. Ce chapitre présente le découpage, les risques et les livrables.
+
+\section{Méthode de travail}
+
+Le travail a suivi un cycle proche de l'agilité légère : expression du besoin avec l'encadrante entreprise, maquettes et API, développement par module (authentification, référentiels, missions, tableau de bord, journal, assistant), puis ajustements (droits chauffeur, CORS, messages d'erreur). Les diagrammes UML ont servi de contrat entre l'analyse et le code. Les tests automatisés du backend ont été exécutés à chaque palier critique (sécurité, persistance).
+
+\section{Planning prévisionnel}
+
+Le tableau~\ref{tab:planning} présente le découpage du projet sur un mois de stage (quatre semaines). L'ordre des lots correspond à la dépendance technique (on n'expose pas les missions sans authentification).
+
+\begin{table}[htbp]
+\centering
+\caption{Découpage du projet en lots}
+\label{tab:planning}
+\begin{tabular}{|p{0.14\textwidth}|p{0.38\textwidth}|p{0.38\textwidth}|}
+\hline
+\TableHead
+\tht{Période} & \tht{Lot} & \tht{Résultat attendu} \\
+\hline
+Semaine 1 & Cadre, besoin, rôles, modèle de données, sécurité JWT & Cahier des charges interne, schéma Flyway, login \\
+\hline
+Semaine 2 & Utilisateurs, clients, chauffeurs, véhicules, missions & CRUD protégés, cycle de vie des courses \\
+\hline
+Semaine 3 & Tableau de bord, alertes, journal & Pilotage et traçabilité \\
+\hline
+Semaine 4 & Assistant, droits chauffeur, recette, Docker, rapport ENSIASD & Espace chauffeur, démo et mémoire \\
+\hline
+\end{tabular}
+\end{table}
+
+\Needspace{11cm}
+\section{Risques et parades}
+
+Cinq risques ont été suivis pendant le stage. Le tableau~\ref{tab:risques} indique, pour chacun, l'impact redouté et la parade appliquée.
+
+\begin{center}
+\captionof{table}{Risques principaux et parades}
+\label{tab:risques}
+\begin{tabular}{|p{0.30\textwidth}|p{0.22\textwidth}|p{0.38\textwidth}|}
+\hline
+\TableHead
+\tht{Risque} & \tht{Impact} & \tht{Parade} \\
+\hline
+Périmètre trop large (GED, Kafka, notifications) & Retard & Priorisation du noyau métier \\
+\hline
+Hallucinations de l'assistant & Perte de confiance & Contexte SQL, réponses courtes, mode sans clé \\
+\hline
+Blocage CORS / JWT en local & Impossibilité de se connecter & Origines multiples, exclusion des routes d'auth \\
+\hline
+Données de démo vides & Tableau de bord peu lisible & Jeux de missions et alertes de démonstration \\
+\hline
+Dépendance à un prestataire LLM & Coût, indisponibilité & Mode déterministe local \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Livrables}
+
+Les livrables du stage comprennent : le code source (backend Spring Boot, frontend React), le schéma de base, la documentation OpenAPI, les diagrammes UML, le présent rapport, et une procédure de démarrage local. Le produit reste un prototype d'entreprise, destiné à être repris par le département informatique.
+
+\section{Conclusion}
+
+La conduite de projet a privilégié un noyau démontrable plutôt qu'une couverture exhaustive du marché TMS. Cette discipline a permis d'aboutir à une application cohérente, testable et documentée. Le chapitre suivant présente les interfaces réalisées, écran par écran.

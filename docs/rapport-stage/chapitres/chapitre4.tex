@@ -1,0 +1,57 @@
+\chapter{Tests, déploiement et discussion}
+
+\section{Introduction}
+
+Ce chapitre présente la stratégie de tests, les modalités de déploiement, les difficultés rencontrées et les limites du livrable.
+
+\section{Stratégie de tests}
+
+Le backend dispose de tests Maven. Le profil de test utilise H2 pour une partie des cas ; des tests d'intégration s'appuient sur PostgreSQL embarqué afin de valider Flyway et JPA. Des scénarios HTTP couvrent l'authentification JWT et des exemples de CRUD (utilisateurs). Cette base ne remplace pas une recette métier complète mais sécurise les régressions sur la sécurité et la persistance.
+
+\subsection{Scénarios de recette}
+
+Le tableau~\ref{tab:recette} propose une grille de recette manuelle, utilisable lors d'une démonstration à S. WATRANS.
+
+\begin{table}[htbp]
+\centering
+\caption{Grille de recette fonctionnelle (extrait)}
+\label{tab:recette}
+\begin{tabular}{|p{0.08\textwidth}|p{0.42\textwidth}|p{0.40\textwidth}|}
+\hline
+\TableHead
+\tht{Id} & \tht{Scénario} & \tht{Résultat attendu} \\
+\hline
+R1 & Login admin valide & Accès dashboard et menus d'admin \\
+\hline
+R2 & Login chauffeur & Menus limités (missions, profil) \\
+\hline
+R3 & Création mission + client & Mission planifiée, trace d'audit \\
+\hline
+R4 & Chauffeur démarre puis termine & Statuts et dates mis à jour \\
+\hline
+R5 & Chauffeur tente une annulation & Refus (droit insuffisant) \\
+\hline
+R6 & Permis ou assurance proche & Alerte sur le tableau de bord \\
+\hline
+R7 & Question « combien de missions » & Réponse courte, cohérente avec la base \\
+\hline
+R8 & Login erroné & Message clair, pas d'accès \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Déploiement}
+
+En développement, PostgreSQL peut être lancé via Docker Compose, l'API par Maven, l'interface par \texttt{npm run dev}. Une stack de production assemble base, API et Nginx (port d'écoute distinct, par exemple 8088). Les secrets (mot de passe de base, secret JWT, clé d'API éventuelle) doivent être fournis par variables d'environnement et non versionnés. Un compte administrateur peut être créé au premier démarrage si la base est vide (\textit{bootstrap}), ce qui facilite une démonstration.
+
+\section{Difficultés et solutions}
+
+Plusieurs points ont demandé un diagnostic : autorisation CORS entre \texttt{localhost} et \texttt{127.0.0.1}, envoi d'un jeton Bearer sur la route de login, messages d'erreur 403 peu lisibles, alimentation du tableau de bord par des données de démonstration. Chaque correctif a visé un comportement prévisible pour l'utilisateur final (connexion depuis le front de développement, listes et graphiques non vides).
+
+\section{Limites et perspectives}
+
+Le livrable n'inclut pas de bus d'événements (Kafka), ni de notifications temps réel, ni de module documentaire. L'assistant dépend de la qualité du contexte injecté et, le cas échéant, d'un prestataire de modèle de langage. Un durcissement (HTTPS, secrets, politique de mots de passe, journalisation centralisée) reste souhaitable avant un usage en production réelle. Ces pistes peuvent faire l'objet d'un travail ultérieur.
+
+\section{Conclusion}
+
+Les tests automatisés et le déploiement local ou conteneurisé rendent le projet démontrable. Les limites rappellent qu'il s'agit d'un produit de stage, extensible. Le chapitre suivant revient sur le planning, les risques et les livrables.

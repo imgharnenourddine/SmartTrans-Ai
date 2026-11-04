@@ -1,0 +1,92 @@
+\chapter{Cadre du stage et étude préalable}
+
+\section{Introduction}
+
+Ce chapitre précise le contexte du stage, les missions confiées, les acteurs métier et les choix technologiques qui ont orienté la réalisation de SmartTrans-AI.
+
+\section{Organisme d'accueil et missions du stagiaire}
+
+\subsection{Présentation de l'organisme}
+
+\begin{center}
+\includegraphics[width=4.8cm]{logo-swatrans.png}
+\end{center}
+
+S. WATRANS est une société spécialisée dans le transport de marchandises, la vente et l'achat de matériaux de construction, ainsi que dans la réalisation de travaux divers et de construction. Grâce à la diversité de ses activités, l'entreprise assure différents services liés au transport, à la logistique et au secteur du bâtiment.
+
+Afin d'accompagner et de faciliter la gestion de ses différentes activités, la société dispose également d'un département informatique, chargé de la gestion et du développement des solutions informatiques utilisées au sein de l'entreprise. C'est au sein de ce département que j'ai effectué mon stage, en participant aux activités et aux travaux liés au développement et à l'amélioration des solutions informatiques de l'entreprise.
+
+\subsection{Missions confiées et planning}
+
+Les travaux confiés au stagiaire, au sein du département informatique, ont porté sur la spécification des rôles, la conception du modèle de données, le développement de l'API REST, l'interface React, l'assistant ancré sur les données, et la rédaction de ce rapport. Le découpage temporel et les risques sont détaillés au chapitre consacré à la conduite de projet.
+
+\section{Problématique et besoins métier}
+
+\subsection{Problématique}
+
+Sans système partagé, le responsable transport ne dispose pas d'une vision fiable des missions (planifiées, en cours, terminées, annulées) ni d'alertes sur les documents arrivant à expiration. Le chauffeur, de son côté, a besoin d'un accès simple à «~ses~» missions, sans droits de planification.
+
+\subsection{Besoins fonctionnels}
+
+Les besoins fonctionnels principaux sont : s'authentifier ; consulter un tableau de bord ; gérer les clients, chauffeurs, véhicules et missions ; consulter un journal d'audit ; interroger un assistant ; pour le chauffeur, suivre et clôturer ses courses.
+
+\subsection{Besoins non fonctionnels}
+
+L'application doit être utilisable via un navigateur, reposer sur une API documentée, séparer les droits selon le rôle, et rester déployable localement (développement) ou via des conteneurs. La confidentialité des mots de passe impose un hachage côté serveur. L'assistant ne doit pas inventer des missions absentes de la base : les réponses s'appuient sur un contexte métier extrait de PostgreSQL.
+
+\section{Acteurs}
+
+Trois acteurs correspondent aux codes de rôle \texttt{ADMIN}, \texttt{TRANSPORT\_MANAGER} et \texttt{DRIVER} (tableau~\ref{tab:acteurs}).
+
+\begin{table}[htbp]
+\centering
+\caption{Acteurs et périmètre fonctionnel}
+\label{tab:acteurs}
+\begin{tabular}{|p{0.28\textwidth}|p{0.62\textwidth}|}
+\hline
+\TableHead
+\tht{Acteur} & \tht{Périmètre} \\
+\hline
+Administrateur & Utilisateurs et rôles, tout le métier, journal, assistant, tableau de bord \\
+\hline
+Responsable transport & Métier, journal, assistant, tableau de bord ; pas de gestion des comptes utilisateurs \\
+\hline
+Chauffeur & Tableau de bord, ses missions, démarrage et fin de mission, profil, alertes permis \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Choix technologiques}
+
+L'architecture retenue est une application web à deux volets : une API REST côté serveur et une interface web côté client. Chaque composant de la stack a un rôle précis, rappelé ci-dessous, avec son logo à droite.
+
+\TechBloc{Java}{logos/java.png}{%
+Java est le socle du backend : typage statique et code structuré, testable pendant le stage.}
+
+\TechBloc{Spring Boot}{logos/spring.png}{%
+Spring Boot orchestre l'API REST (\texttt{/api/v1}), JPA, la sécurité et les tests \cite{spring}.}
+
+\TechBloc{PostgreSQL}{logos/postgresql.png}{%
+PostgreSQL stocke utilisateurs, clients, chauffeurs, véhicules, missions et journal \cite{postgres}.}
+
+\TechBloc{JWT}{logos/jwt.png}{%
+Après le login, le client envoie un JSON Web Token \cite{jwt} dans \texttt{Authorization}. L'API reste sans état.}
+
+\TechBloc{React}{logos/react.png}{%
+React construit l'interface (tableau de bord, formulaires, vues selon le profil) \cite{react}.}
+
+\TechBloc{TypeScript}{logos/typescript.png}{%
+TypeScript type le client et limite les écarts de contrat avec l'API (identifiants, statuts, rôles).}
+
+\TechBloc{Vite}{logos/vite.png}{%
+Vite compile le front. Un proxy vers le port 8080 évite les blocages CORS en développement.}
+
+\TechBloc{Flyway}{logos/flyway.png}{%
+Flyway versionne le schéma : les migrations alignent la base sur le code, en local comme en conteneur.}
+
+\TechBloc{OpenAI}{logos/openai.png}{%
+Avec \texttt{OPENAI\_API\_KEY}, l'assistant appelle Chat Completions (\texttt{gpt-4o-mini}). Sinon, le mode \texttt{GROUNDED} s'appuie sur les données locales.}
+
+\section{Conclusion}
+
+Le cadre du stage fixe un produit de transport, trois rôles et une architecture API plus interface. Le chapitre suivant situe ce choix face à l'état de l'art.

@@ -1,0 +1,55 @@
+\chapter{État de l'art et positionnement}
+
+\section{Introduction}
+
+Avant de spécifier SmartTrans-AI, il convient de situer le projet dans le paysage des systèmes de gestion de transport (TMS), des pratiques d'exploitation encore largement manuelles, et des usages émergents de l'intelligence artificielle en logistique. Ce chapitre justifie le positionnement du livrable : un outil métier ciblé, sécurisé, et un assistant ancré sur les données de l'entreprise plutôt qu'un TMS générique du marché.
+
+\section{Gestion de transport et systèmes d'information}
+
+\subsection{Le métier de TMS}
+
+Un \textit{Transport Management System} vise à planifier les tournées, affecter les ressources (chauffeurs, véhicules), suivre l'exécution et produire des indicateurs. Les éditeurs internationaux proposent des suites souvent coûteuses, longues à paramétrer, et parfois surdimensionnées pour une PME de transport et de BTP telle que S. WATRANS. À l'opposé, de nombreuses exploitations s'appuient encore sur des tableurs, la messagerie et le téléphone. Ces outils restent souples, mais ils ne garantissent ni l'unicité de l'information, ni la traçabilité, ni le contrôle d'accès par rôle.
+
+\subsection{Limites des pratiques non intégrées}
+
+Lorsque les missions sont saisies dans un fichier partagé, les risques sont connus : versions divergentes, absence d'historique fiable, difficulté à savoir si un chauffeur est déjà en course, oubli des dates de permis ou d'assurance. Le besoin exprimé pendant le stage n'était pas de reproduire toute la richesse d'un TMS du marché, mais de couvrir un noyau : clients, flotte, missions, alertes, journal, et un canal de questionnement rapide (assistant).
+
+\section{Authentification, API et applications web}
+
+Les applications d'entreprise actuelles séparent souvent une interface web d'une API REST. L'authentification par session serveur reste possible ; le jeton JWT, largement documenté \cite{jwt}, permet à l'interface de rester sans état côté API, ce qui simplifie le déploiement et le passage à l'échelle. Spring Security et Spring Boot offrent un cadre éprouvé pour exposer des ressources protégées par rôle \cite{spring}. Côté client, React s'est imposé pour des interfaces modulaires \cite{react}. PostgreSQL reste un choix robuste pour un modèle relationnel métier \cite{postgres}.
+
+Le tableau~\ref{tab:comparaison-stack} résume les alternatives envisagées et le choix retenu.
+
+\begin{table}[htbp]
+\centering
+\caption{Positionnement des choix techniques}
+\label{tab:comparaison-stack}
+\begin{tabular}{|p{0.22\textwidth}|p{0.32\textwidth}|p{0.36\textwidth}|}
+\hline
+\TableHead
+\tht{Composant} & \tht{Alternatives} & \tht{Choix et motif} \\
+\hline
+Backend & Node.js, Django, .NET & Spring Boot : typage Java, sécurité, JPA, tests d'intégration \\
+\hline
+Frontend & Angular, Vue & React + Vite : écosystème, rapidité de développement \\
+\hline
+Base de données & MySQL, MongoDB & PostgreSQL : relations, contraintes, JSON pour l'audit \\
+\hline
+Auth & Session, OAuth2 complet & JWT : API stateless, rôles, simplicité de mise en œuvre \\
+\hline
+IA & Chat générique sans contexte & Assistant ancré sur missions, chauffeurs, véhicules, clients \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Intelligence artificielle en exploitation}
+
+Les modèles de langage permettent de formuler des questions en langue naturelle. Sans ancrage, ils hallucinent des effectifs ou des immatriculations. La littérature et les retours d'usage insistent sur la \textit{grounding} : fournir un contexte issu du SI. SmartTrans-AI adopte cette approche : extraction d'un résumé opérationnel, puis génération éventuelle via une clé d'API, ou réponses déterministes si la clé est absente. L'IA n'est pas un module de planification automatique des tournées (problème d'optimisation combinatoire) ; elle assiste la consultation et la suggestion de ressources disponibles.
+
+\section{Positionnement de SmartTrans-AI}
+
+SmartTrans-AI se situe entre le tableur et le TMS complet. Il est spécifique au besoin du département informatique de S. WATRANS : digitaliser le suivi des missions et de la conformité minimale de la flotte, avec trois profils, un audit automatique et un assistant. Les fonctionnalités de GED et de notifications temps réel ont été écartées pour tenir le calendrier du stage et rester sur un produit démontrable.
+
+\section{Conclusion}
+
+L'état de l'art confirme l'intérêt d'une application web sécurisée, d'un modèle relationnel clair, et d'une IA contrainte par les données. Le chapitre suivant traduit ces orientations en cas d'utilisation et en conception UML.

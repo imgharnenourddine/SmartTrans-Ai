@@ -1,0 +1,65 @@
+@startuml diagramme-cas-utilisation
+title SmartTrans-AI — Cas d'utilisation
+top to bottom direction
+scale max 900 width
+skinparam actorStyle awesome
+skinparam wrapWidth 140
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 28
+
+actor "Administrateur" as Admin
+actor "Responsable\ntransport" as Manager
+actor "Chauffeur" as Driver
+
+rectangle "SmartTrans-AI" {
+  package "Commun" {
+    usecase "S'authentifier (JWT)" as UC_Login
+    usecase "Tableau de bord\net alertes d'expiration" as UC_Dash
+  }
+  package "Métier\n(admin et responsable)" {
+    usecase "Gérer les clients" as UC_Clients
+    usecase "Gérer les chauffeurs" as UC_Drivers
+    usecase "Gérer les véhicules" as UC_Vehicles
+    usecase "Planifier et suivre\nles missions" as UC_Missions
+    usecase "Journal d'activités\n(lecture seule)" as UC_Act
+    usecase "Assistant IA" as UC_AI
+  }
+  package "Administration" {
+    usecase "Utilisateurs et rôles" as UC_Users
+  }
+  package "Espace chauffeur" {
+    usecase "Consulter mes missions" as UC_MyM
+    usecase "Démarrer / terminer\nune mission" as UC_Stat
+    usecase "Mon profil" as UC_Prof
+  }
+}
+
+Admin --> UC_Login
+Manager --> UC_Login
+Driver --> UC_Login
+
+Admin --> UC_Dash
+Manager --> UC_Dash
+Driver --> UC_Dash
+
+Admin --> UC_Clients
+Manager --> UC_Clients
+Admin --> UC_Drivers
+Manager --> UC_Drivers
+Admin --> UC_Vehicles
+Manager --> UC_Vehicles
+Admin --> UC_Missions
+Manager --> UC_Missions
+Admin --> UC_Act
+Manager --> UC_Act
+Admin --> UC_AI
+Manager --> UC_AI
+
+Admin --> UC_Users
+
+Driver --> UC_MyM
+Driver --> UC_Stat
+Driver --> UC_Prof
+
+@enduml

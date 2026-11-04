@@ -1,0 +1,211 @@
+% Conformité guide ENSIASD (template rapport de stage).
+% Compilation : xelatex -interaction=nonstopmode main.tex  (deux fois)
+
+\documentclass[12pt,a4paper,oneside]{report}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{french}
+\setmainfont{Times New Roman}[
+  Ligatures=TeX,
+  SmallCapsFont={Times New Roman},
+  SmallCapsFeatures={Letters=Uppercase,Scale=0.82}
+]
+
+% Guillemets style babel-french (\og \fg), absents de polyglossia.
+\providecommand{\og}{\guillemotleft~}
+\providecommand{\fg}{\unskip~\guillemotright}
+
+\setlength{\emergencystretch}{3em}
+\tolerance=2000
+
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=18pt,headsep=8pt,footskip=22pt]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{needspace}
+\usepackage{array,booktabs,tabularx,longtable}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\definecolor{ensiBlue}{RGB}{0, 90, 156}
+\definecolor{tableHeadBlue}{RGB}{0, 90, 156}
+\newcommand{\TableHead}{\rowcolor{tableHeadBlue}}
+\newcommand{\tht}[1]{\textcolor{white}{\textbf{#1}}}
+% Bloc techno : texte à gauche, logo à droite, espacement élastique
+% pour remplir la page sans trou en bas.
+\newcommand{\TechBloc}[3]{%
+  \par
+  \vspace{0.32em plus 0.2em minus 0.08em}%
+  {\color{ensiBlue!35}\hrule height 0.45pt}%
+  \vspace{0.28em plus 0.12em}%
+  \noindent
+  \begin{tabular}{@{}p{\dimexpr\textwidth-1.75cm} @{\hspace{0.28cm}} c @{}}
+    \textbf{#1.} #3 &
+    \raisebox{-0.42\height}{\includegraphics[height=1.05cm]{#2}}
+  \end{tabular}%
+  \par
+}
+\usepackage{microtype}
+\usepackage{csquotes}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=1.5em}
+
+\usepackage[explicit]{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{tocloft}
+
+% En-tête ENSIASD : libellé italique gras à gauche + filet.
+% Chaque style redéfinit entièrement têtes et pieds (fancyhdr).
+\newcommand{\EnsiHeadText}{\small\bfseries\itshape\nouppercase{\leftmark}}
+\newcommand{\EnsiPageStyle}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0.45pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+  \fancyhead[L]{\EnsiHeadText}%
+  \fancyfoot[R]{\thepage}%
+}
+\fancypagestyle{plain}{\EnsiPageStyle}
+\fancypagestyle{frontmatter}{\EnsiPageStyle}
+\fancypagestyle{mainmatter}{\EnsiPageStyle}
+\pagestyle{mainmatter}
+
+\renewcommand{\chaptermark}[1]{}
+\renewcommand{\sectionmark}[1]{}
+
+\renewcommand{\chaptername}{CHAPITRE}
+\newcommand{\EnsiChapterTitle}[1]{%
+  \markboth{Chapitre \thechapter{} : #1}{}%
+  \MakeUppercase{\chaptername~\thechapter{} : #1}%
+}
+\newcommand{\EnsiChapterStar}[1]{%
+  \markboth{#1}{}%
+  \MakeUppercase{#1}%
+}
+\titleformat{\chapter}[block]
+  {\normalfont\bfseries\fontsize{16}{20}\selectfont\raggedleft}
+  {}
+  {0pt}
+  {\EnsiChapterTitle{#1}}
+\titlespacing*{\chapter}{0pt}{0pt}{54pt}
+
+\titleformat{name=\chapter,numberless}[block]
+  {\normalfont\bfseries\fontsize{16}{20}\selectfont\raggedleft}
+  {}
+  {0pt}
+  {\EnsiChapterStar{#1}}
+\titlespacing*{name=\chapter,numberless}{0pt}{0pt}{54pt}
+
+\renewcommand{\thesection}{\Roman{section}}
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{14}{18}\selectfont}
+  {\thesection.}
+  {0.6em}
+  {#1}
+\titlespacing*{\section}{0pt}{12pt}{12pt}
+
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\titleformat{\subsection}
+  {\normalfont\bfseries\fontsize{12}{16}\selectfont}
+  {\thesubsection}
+  {0.5em}
+  {#1}
+\titlespacing*{\subsection}{0pt}{6pt}{6pt}
+
+\renewcommand{\thesubsubsection}{\thesection.\arabic{subsection}.\arabic{subsubsection}}
+\titleformat{\subsubsection}
+  {\normalfont\bfseries\fontsize{12}{16}\selectfont}
+  {\thesubsubsection}
+  {0.5em}
+  {#1}
+\titlespacing*{\subsubsection}{0pt}{6pt}{6pt}
+
+\usepackage{newfloat}
+\DeclareFloatingEnvironment[
+  fileext=los,
+  listname={Liste des schémas},
+  name=Schéma,
+  placement=htbp
+]{schema}
+
+\renewcommand{\thefigure}{\arabic{chapter}.\arabic{figure}}
+\renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}
+\renewcommand{\theschema}{\arabic{chapter}.\arabic{schema}}
+
+\DeclareCaptionLabelFormat{ensi}{#1 : #2}
+\captionsetup[figure]{
+  name={Figure},
+  font={it},
+  justification=centering,
+  skip=6pt,
+  labelformat=ensi,
+  labelsep=colon
+}
+\captionsetup[schema]{
+  font={it},
+  justification=centering,
+  skip=6pt,
+  labelformat=ensi,
+  labelsep=colon
+}
+% Tableaux : titre en haut, 11 pt, centré
+\captionsetup[table]{
+  font={it},
+  justification=centering,
+  skip=6pt,
+  labelformat=ensi,
+  labelsep=colon,
+  position=top
+}
+\usepackage{etoolbox}
+\AtBeginEnvironment{figure}{\fontsize{11}{13}\selectfont}
+\AtBeginEnvironment{table}{\fontsize{11}{13}\selectfont}
+\AtBeginEnvironment{schema}{\fontsize{11}{13}\selectfont}
+\AfterEndPreamble{%
+  \renewcommand{\figurename}{Figure}%
+  \renewcommand{\tablename}{Tableau}%
+}
+
+\graphicspath{{figures/}{../rapport/}}
+
+\newcommand{\FigPlaceholder}[1]{%
+  \begin{center}
+    \fbox{\parbox{0.88\textwidth}{\centering\vspace{2.2cm}\textit{#1}\vspace{2.2cm}}}
+  \end{center}
+}
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+\setlength{\parindent}{1.25em}
+\setlength{\parskip}{0pt}
+
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{bookmark}
+
+\AtBeginDocument{%
+  \renewcommand{\contentsname}{Table des matières}%
+  \renewcommand{\listfigurename}{Liste des figures}%
+  \renewcommand{\listtablename}{Liste des tableaux}%
+  \renewcommand{\bibname}{Références bibliographiques}%
+  \renewcommand{\figurename}{Figure}%
+  \renewcommand{\tablename}{Tableau}%
+}
+
+\makeatletter
+\renewcommand\tableofcontents{%
+  \chapter*{\contentsname}%
+  \@starttoc{toc}%
+}
+\renewcommand\listoffigures{%
+  \chapter*{\listfigurename}%
+  \@starttoc{lof}%
+}
+\renewcommand\listoftables{%
+  \chapter*{\listtablename}%
+  \@starttoc{lot}%
+}
+\makeatother

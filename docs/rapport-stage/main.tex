@@ -1,0 +1,87 @@
+% !TeX program = xelatex
+\input{preambule}
+\input{identite}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=black,
+  pdftitle={Rapport de stage --- SmartTrans-AI},
+  pdfauthor={\NomAuteur}
+}
+
+\begin{document}
+
+% Couverture : aucun numéro.
+\pagestyle{empty}
+\pagenumbering{gobble}
+\input{pages/garde}
+
+% Comptage à partir de la 2e page, chiffres arabes.
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{mainmatter}
+
+\input{pages/dedicaces}
+\clearpage
+\input{pages/remerciements}
+\clearpage
+\input{pages/resume}
+\clearpage
+\input{pages/abstract}
+
+\clearpage
+\tableofcontents
+
+\clearpage
+\chapter*{Liste des abréviations}
+\addcontentsline{toc}{chapter}{Liste des abréviations}
+\input{pages/abreviations}
+
+\clearpage
+\addcontentsline{toc}{chapter}{Liste des figures}
+\listoffigures
+
+\clearpage
+\addcontentsline{toc}{chapter}{Liste des tableaux}
+\listoftables
+
+\clearpage
+\addcontentsline{toc}{chapter}{Liste des schémas}
+\listofschemas
+
+\clearpage
+\pagestyle{mainmatter}
+
+\input{chapitres/introduction}
+
+\input{chapitres/chapitre1}
+\input{chapitres/chapitre-etat-art}
+\input{chapitres/chapitre2}
+\input{chapitres/chapitre3}
+\input{chapitres/chapitre4}
+\input{chapitres/chapitre-conduite}
+\input{chapitres/chapitre-interfaces}
+
+\input{chapitres/conclusion}
+
+\input{chapitres/biblio}
+
+\appendix
+\clearpage
+\setcounter{chapter}{1}%
+\renewcommand{\thechapter}{A}%
+\setcounter{table}{0}%
+\setcounter{figure}{0}%
+\setcounter{schema}{0}%
+\input{annexes/annexeA}
+\clearpage
+\setcounter{chapter}{2}%
+\renewcommand{\thechapter}{B}%
+\setcounter{table}{0}%
+\setcounter{figure}{0}%
+\setcounter{schema}{0}%
+\input{annexes/annexeB}
+
+\end{document}

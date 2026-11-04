@@ -1,0 +1,151 @@
+@startuml diagramme-classes
+title SmartTrans-AI — Diagramme de classes (domaine métier)
+hide circle
+skinparam classAttributeIconSize 0
+
+class AuditableEntity <<MappedSuperclass>> {
+  createdAt : Instant
+  updatedAt : Instant
+}
+
+class Role {
+  id : UUID
+  code : RoleCode
+  label : String
+  createdAt : Instant
+}
+
+class User {
+  id : UUID
+  email : String
+  passwordHash : String
+  firstName : String
+  lastName : String
+  phone : String
+  enabled : boolean
+  lastLoginAt : Instant
+}
+
+class Client {
+  id : UUID
+  companyName : String
+  address : String
+  phone : String
+  email : String
+}
+
+class Driver {
+  id : UUID
+  firstName : String
+  lastName : String
+  phone : String
+  licenseNumber : String
+  licenseExpiresAt : LocalDate
+  experienceYears : Short
+  status : DriverStatus
+}
+
+class Vehicle {
+  id : UUID
+  registrationNumber : String
+  type : VehicleType
+  capacityKg : BigDecimal
+  mileageKm : Integer
+  consumptionLPer100km : BigDecimal
+  insuranceExpiresAt : LocalDate
+  technicalVisitExpiresAt : LocalDate
+  status : VehicleStatus
+}
+
+class Mission {
+  id : UUID
+  reference : String
+  departureLocation : String
+  destination : String
+  scheduledAt : Instant
+  startedAt : Instant
+  completedAt : Instant
+  weightKg : BigDecimal
+  cargoType : String
+  observations : String
+  status : MissionStatus
+}
+
+class Activity {
+  id : UUID
+  action : ActivityAction
+  entityType : String
+  entityId : UUID
+  metadata : JSON
+  createdAt : Instant
+}
+
+enum RoleCode {
+  ADMIN
+  TRANSPORT_MANAGER
+  DRIVER
+}
+
+enum DriverStatus {
+  AVAILABLE
+  ON_MISSION
+  UNAVAILABLE
+  SUSPENDED
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  OUT_OF_SERVICE
+}
+
+enum VehicleType {
+  TRUCK
+  VAN
+  TRAILER
+  OTHER
+}
+
+enum MissionStatus {
+  PLANIFIED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+  STATUS_CHANGE
+  LOGIN
+}
+
+User --|> AuditableEntity
+Client --|> AuditableEntity
+Driver --|> AuditableEntity
+Vehicle --|> AuditableEntity
+Mission --|> AuditableEntity
+
+User "0..*" -- "1..*" Role : user_roles
+Driver "0..1" -- "0..1" User : compte de connexion
+Mission "0..*" --> "1" Client
+Mission "0..*" --> "0..1" Driver
+Mission "0..*" --> "0..1" Vehicle
+Mission "0..*" --> "0..1" User : createdBy
+Activity "0..*" --> "0..1" User : actor
+
+Role --> RoleCode
+Driver --> DriverStatus
+Vehicle --> VehicleStatus
+Vehicle --> VehicleType
+Mission --> MissionStatus
+Activity --> ActivityAction
+
+note bottom of Activity
+  Journal d'audit automatique.
+  Pas de CRUD manuel.
+end note
+
+@enduml

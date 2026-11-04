@@ -1,0 +1,127 @@
+================================================================================
+SmartTrans-AI — Commandes pour démarrer le projet en local
+================================================================================
+
+Prérequis une fois pour toutes :
+  - Java 25
+  - Node.js (npm)
+  - Docker (pour PostgreSQL)
+
+Ouvre DEUX terminaux : un pour l’API, un pour l’interface.
+
+
+--------------------------------------------------------------------------------
+1) PostgreSQL (une seule fois, ou si la base est arrêtée)
+--------------------------------------------------------------------------------
+
+  cd /chemin/vers/SmartTrans-A
+
+  docker compose up -d postgres
+
+  Explication :
+    - "docker compose"       : lance les services définis dans docker-compose.yml
+    - "up"                   : démarre les conteneurs
+    - "-d"                   : en arrière-plan (tu récupères le terminal)
+    - "postgres"             : uniquement la base, pas toute la stack prod
+
+  Connexion (pgAdmin / DBeaver) :
+    Hôte 127.0.0.1  Port 5432
+    Base smarttrans  User smarttrans  Mot de passe smarttrans
+
+
+--------------------------------------------------------------------------------
+2) Backend — API Spring Boot  (terminal 1, à laisser ouvert)
+--------------------------------------------------------------------------------
+
+  cd /chemin/vers/SmartTrans-AI/backend
+
+  ./mvnw spring-boot:run
+
+  Explication :
+    - "cd backend"           : on se place dans le dossier de l’API
+    - "./mvnw"               : Maven Wrapper (Maven est téléchargé si besoin)
+    - "spring-boot:run"      : compile et démarre l’API (profil "dev" par défaut)
+
+  Si ça refuse la base, force l’URL (même terminal, AVANT spring-boot:run) :
+
+    export DATABASE_URL='jdbc:postgresql://127.0.0.1:5432/smarttrans'
+    export DATABASE_USERNAME=smarttrans
+    export DATABASE_PASSWORD=smarttrans
+    ./mvnw spring-boot:run
+
+  Explication des export :
+    - "export"               : variable d’environnement pour ce terminal
+    - DATABASE_URL          : adresse JDBC de PostgreSQL
+    - USERNAME / PASSWORD    : identifiants de la base
+
+  API prête quand tu vois "Started SmartTransAiApplication".
+  Adresses :
+    Santé     http://127.0.0.1:8080/actuator/health
+    Swagger   http://127.0.0.1:8080/swagger-ui.html
+    API       http://127.0.0.1:8080/api/v1
+
+
+--------------------------------------------------------------------------------
+3) Frontend — interface React  (terminal 2, à laisser ouvert)
+--------------------------------------------------------------------------------
+
+  cd /chemin/vers/SmartTrans-AI/frontend
+
+  npm install
+
+  Explication :
+    - "cd frontend"           : dossier de l’interface
+    - "npm install"           : installe les dépendances (une fois, ou après
+                                 un changement de package.json)
+
+  npm run dev -- --host 127.0.0.1 --port 5173
+
+  Explication :
+    - "npm run dev"           : démarre le serveur de développement Vite
+    - "--"                   : les options après sont pour Vite, pas pour npm
+    - "--host 127.0.0.1"     : écoute en IPv4 (évite les soucis CORS / login)
+    - "--port 5173"          : port de l’interface
+
+  App : http://127.0.0.1:5173
+  Vite envoie /api vers http://localhost:8080 (l’API doit déjà tourner).
+
+
+--------------------------------------------------------------------------------
+4) Connexion
+--------------------------------------------------------------------------------
+
+  Ouvre : http://127.0.0.1:5173/login
+
+  Email    : admin@smarttrans.ai
+  Mot de passe : Password1!
+
+  (Compte créé automatiquement au premier démarrage, profil dev, si la
+   table users est vide.)
+
+
+--------------------------------------------------------------------------------
+5) Arrêter
+--------------------------------------------------------------------------------
+
+  Dans chaque terminal API / frontend :  Ctrl+C
+    Explication : arrête le processus au premier plan.
+
+  docker compose stop postgres
+    Explication : arrête PostgreSQL sans supprimer les données.
+
+  docker compose down
+    Explication : arrête et retire le conteneur (les données restent dans le
+                  volume Docker, sauf si tu ajoutes -v).
+
+
+--------------------------------------------------------------------------------
+Rappel de l’ordre
+--------------------------------------------------------------------------------
+
+  1. docker compose up -d postgres
+  2. ./mvnw spring-boot:run          (dossier backend)
+  3. npm run dev -- --host 127.0.0.1 --port 5173   (dossier frontend)
+  4. Navigateur : http://127.0.0.1:5173
+
+  Erreur 502 au login = l’API n’est pas encore démarrée (attends Spring Boot).
+  Préfère 127.0.0.1 plutôt que localhost.
