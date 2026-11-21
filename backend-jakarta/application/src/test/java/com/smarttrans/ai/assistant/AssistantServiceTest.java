@@ -34,9 +34,10 @@ class AssistantServiceTest {
         assistant = new AssistantService();
         ServiceTestSupport.inject(assistant, entityManager, config, httpClient);
         ServiceTestSupport.stubQueries(entityManager, Map.of("select count(m) from Mission m", 7L));
-        when(config.openAiApiKey()).thenReturn(Optional.empty());
-        when(config.openAiBaseUrl()).thenReturn("http://llm.test");
-        when(config.openAiModel()).thenReturn("gpt-test");
+        when(config.mistralApiKey()).thenReturn(Optional.empty());
+        when(config.mistralBaseUrl()).thenReturn("http://llm.test");
+        when(config.mistralModel()).thenReturn("mistral-small-latest");
+        when(config.mistralRequestTimeoutMs()).thenReturn(12_000L);
     }
 
     @Test
@@ -62,7 +63,7 @@ class AssistantServiceTest {
 
     @Test
     void languageModelAnswerReplacesTheGroundedAnswer() throws Exception {
-        when(config.openAiApiKey()).thenReturn(Optional.of("test-key"));
+        when(config.mistralApiKey()).thenReturn(Optional.of("test-key"));
         HttpResponse<String> httpResponse = response(200, """
                 {"choices":[{"message":{"content":"  Le parc compte 7 missions.  "}}]}
                 """);
@@ -76,7 +77,7 @@ class AssistantServiceTest {
 
     @Test
     void languageModelFailureFallsBackToTheGroundedAnswer() throws Exception {
-        when(config.openAiApiKey()).thenReturn(Optional.of("test-key"));
+        when(config.mistralApiKey()).thenReturn(Optional.of("test-key"));
         doThrow(new IOException("unavailable")).when(httpClient).send(any(HttpRequest.class), any());
 
         var response = assistant.ask(new AskRequest("Combien de missions ?"));

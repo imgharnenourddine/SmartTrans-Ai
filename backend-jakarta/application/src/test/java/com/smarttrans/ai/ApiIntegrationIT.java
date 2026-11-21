@@ -80,6 +80,7 @@ class ApiIntegrationIT {
         builder.environment().put("JWT_SECRET", JWT_SECRET);
         builder.environment().put("JWT_EXPIRATION_MS", "86400000");
         builder.environment().remove("OPENAI_API_KEY");
+        builder.environment().remove("MISTRAL_API_KEY");
         builder.environment().put("WILDFLY_JAVA_OPTS", "-Djboss.socket.binding.port-offset=" + PORT_OFFSET);
         server = builder.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

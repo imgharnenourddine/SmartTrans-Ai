@@ -37,9 +37,9 @@ public class PlatformResource {
                     "jwtSecretPresent":%s,
                     "jwtExpirationMs":%d,
                     "jwtExpirationSources":%s,
-                    "openAiKeyPresent":%s,
-                    "openAiModel":"%s",
-                    "openAiBaseUrl":"%s",
+                    "mistralKeyPresent":%s,
+                    "mistralModel":"%s",
+                    "mistralBaseUrl":"%s",
                     "corsAllowedOrigins":"%s"
                   }
                 }
@@ -49,9 +49,9 @@ public class PlatformResource {
                 externalConfig.jwtSecretPresent(),
                 externalConfig.jwtExpirationMs(),
                 jwtExpirationSources(),
-                externalConfig.openAiKeyPresent(),
-                escape(externalConfig.openAiModel()),
-                escape(externalConfig.openAiBaseUrl()),
+                externalConfig.mistralKeyPresent(),
+                escape(externalConfig.mistralModel()),
+                escape(externalConfig.mistralBaseUrl()),
                 escape(externalConfig.corsAllowedOrigins()))
                 .strip();
     }

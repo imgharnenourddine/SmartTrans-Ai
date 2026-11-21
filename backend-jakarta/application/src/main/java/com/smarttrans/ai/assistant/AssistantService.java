@@ -66,7 +66,7 @@ public class AssistantService {
 
     public AskResponse ask(AskRequest request) {
         Grounding grounding = collect(request.message().replace("%", "").replace("_", "").trim());
-        String llmAnswer = config.openAiApiKey().isPresent()
+        String llmAnswer = config.mistralApiKey().isPresent()
                 ? complete(SYSTEM_PROMPT, contextBlock(grounding) + "\nRéponds maintenant à la question.").orElse(null)
                 : null;
         String mode = llmAnswer != null ? "LLM" : "GROUNDED";
@@ -76,12 +76,12 @@ public class AssistantService {
 
     private java.util.Optional<String> complete(String systemPrompt, String userPrompt) {
         try {
-            String base = config.openAiBaseUrl() == null || config.openAiBaseUrl().isBlank()
-                    ? "https://api.openai.com/v1"
-                    : config.openAiBaseUrl().replaceAll("/$", "");
-            String model = config.openAiModel() == null || config.openAiModel().isBlank()
-                    ? "gpt-4o-mini"
-                    : config.openAiModel();
+            String base = config.mistralBaseUrl() == null || config.mistralBaseUrl().isBlank()
+                    ? "https://api.mistral.ai/v1"
+                    : config.mistralBaseUrl().replaceAll("/$", "");
+            String model = config.mistralModel() == null || config.mistralModel().isBlank()
+                    ? "mistral-small-latest"
+                    : config.mistralModel();
             String body = objectMapper.writeValueAsString(Map.of(
                     "model", model,
                     "temperature", 0.2,
@@ -90,8 +90,8 @@ public class AssistantService {
                             Map.of("role", "user", "content", userPrompt))));
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(base + "/chat/completions"))
-                    .timeout(Duration.ofSeconds(12))
-                    .header("Authorization", "Bearer " + config.openAiApiKey().orElse(""))
+                    .timeout(Duration.ofMillis(config.mistralRequestTimeoutMs()))
+                    .header("Authorization", "Bearer " + config.mistralApiKey().orElse(""))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
