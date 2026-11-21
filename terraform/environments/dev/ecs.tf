@@ -53,7 +53,7 @@ resource "aws_service_discovery_service" "jakarta" {
 resource "aws_launch_template" "ecs" {
   name          = local.name_prefix
   image_id      = data.aws_ssm_parameter.ecs_ami.value
-  instance_type = "t3.medium"
+  instance_type = "t3.small"
 
   iam_instance_profile {
     arn = aws_iam_instance_profile.ecs.arn
@@ -133,12 +133,18 @@ resource "aws_ecs_task_definition" "jakarta" {
       image     = "${aws_ecr_repository.app["smarttrans-jakarta"].repository_url}:latest"
       essential = true
       cpu       = 1024
-      memory    = 3072
+      memory    = 1536
       portMappings = [
         {
           containerPort = local.application_ports.jakarta
           hostPort      = local.application_ports.jakarta
           protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "WILDFLY_JAVA_OPTS"
+          value = "-Djboss.bind.address=0.0.0.0 -Xms512m -Xmx768m -XX:MaxMetaspaceSize=256m"
         }
       ]
       secrets = [
@@ -157,6 +163,10 @@ resource "aws_ecs_task_definition" "jakarta" {
         {
           name      = "JWT_SECRET"
           valueFrom = aws_secretsmanager_secret.jwt.arn
+        },
+        {
+          name      = "MISTRAL_API_KEY"
+          valueFrom = local.mistral_api_key_secret_arn
         }
       ]
       healthCheck = {
@@ -192,7 +202,7 @@ resource "aws_ecs_task_definition" "frontend" {
       image     = "${aws_ecr_repository.app["smarttrans-frontend"].repository_url}:latest"
       essential = true
       cpu       = 256
-      memory    = 512
+      memory    = 256
       portMappings = [
         {
           containerPort = local.application_ports.frontend

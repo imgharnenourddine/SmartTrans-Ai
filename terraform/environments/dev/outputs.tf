@@ -48,6 +48,16 @@ output "alb_dns_name" {
   value       = aws_lb.main.dns_name
 }
 
+output "https_url" {
+  description = "URL HTTPS publique de SmartTrans-AI."
+  value       = "https://${local.public_domain}"
+}
+
+output "cloudfront_domain_name" {
+  description = "Domaine de la distribution CloudFront."
+  value       = aws_cloudfront_distribution.main.domain_name
+}
+
 output "ecs_cluster_name" {
   description = "Nom du cluster ECS."
   value       = aws_ecs_cluster.main.name
