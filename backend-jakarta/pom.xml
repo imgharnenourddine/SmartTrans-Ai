@@ -37,6 +37,7 @@
         <version.jjwt>0.12.6</version.jjwt>
         <version.spring.security.crypto>6.4.5</version.spring.security.crypto>
         <version.jackson>2.21.7</version.jackson>
+        <version.hibernate>7.4.13.Final</version.hibernate>
     </properties>
 
     <dependencyManagement>
@@ -110,6 +111,11 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${version.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${version.hibernate}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

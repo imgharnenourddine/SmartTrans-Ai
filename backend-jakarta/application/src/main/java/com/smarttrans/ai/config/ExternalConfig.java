@@ -48,8 +48,12 @@ public class ExternalConfig {
         return jwtExpirationMs;
     }
 
+    public Optional<String> openAiApiKey() {
+        return openAiApiKey.filter(value -> !value.isBlank());
+    }
+
     public boolean openAiKeyPresent() {
-        return openAiApiKey.filter(value -> !value.isBlank()).isPresent();
+        return openAiApiKey().isPresent();
     }
 
     public String openAiModel() {

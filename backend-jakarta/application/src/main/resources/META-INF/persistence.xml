@@ -10,6 +10,9 @@
         <class>com.smarttrans.ai.domain.UserAccount</class>
         <class>com.smarttrans.ai.domain.Driver</class>
         <class>com.smarttrans.ai.domain.Vehicle</class>
+        <class>com.smarttrans.ai.domain.Client</class>
+        <class>com.smarttrans.ai.domain.Mission</class>
+        <class>com.smarttrans.ai.domain.Activity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
