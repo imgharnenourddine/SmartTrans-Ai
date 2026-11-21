@@ -26,7 +26,11 @@ data "aws_iam_policy_document" "github_actions_assume" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:imgharnenourddine/SmartTrans-Ai:ref:refs/heads/main"]
+      values = [
+        "repo:imgharnenourddine/SmartTrans-Ai:ref:refs/heads/main",
+        "repo:imgharnenourddine/SmartTrans-Ai:job_workflow_ref:imgharnenourddine/SmartTrans-Ai/.github/workflows/deploy-jakarta.yml@refs/heads/main",
+        "repo:imgharnenourddine/SmartTrans-Ai:job_workflow_ref:imgharnenourddine/SmartTrans-Ai/.github/workflows/deploy-frontend.yml@refs/heads/main",
+      ]
     }
   }
 }
