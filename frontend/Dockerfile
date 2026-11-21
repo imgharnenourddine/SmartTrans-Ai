@@ -32,8 +32,9 @@ COPY nginx.conf /etc/nginx/templates/default.conf.template
 # Copier uniquement les fichiers generes par Vite
 COPY --from=builder /app/dist/ /usr/share/nginx/html/
 
-# Configuration par defaut de notre API locale
-ENV API_UPSTREAM=api:8080
+# Conteneur Jakarta EE sur le réseau Docker partagé postgres_default.
+# Le nom doit être celui du conteneur backend, smarttrans-jakarta.
+ENV API_UPSTREAM=smarttrans-jakarta:8080
 
 # Ne substituer que API_UPSTREAM dans le template
 ENV NGINX_ENVSUBST_FILTER=API_UPSTREAM
