@@ -10,9 +10,14 @@
 # Optional:
 #   FLYWAY_MIGRATIONS_PATH   defaults to ../backend/src/main/resources/db/migration
 #   SKIP_BUILD=1             reuse the already built jars
+#   WILDFLY_JAVA_OPTS        JVM arguments for WildFly, for example a system property
 #   JWT_SECRET, JWT_EXPIRATION_MS, OPENAI_API_KEY, OPENAI_MODEL,
 #   OPENAI_BASE_URL, CORS_ALLOWED_ORIGINS
 #
+# MicroProfile Config priority, highest first: Java system properties set through
+# WILDFLY_JAVA_OPTS, then environment variables, then META-INF/microprofile-config.properties.
+# POSTGRESQL_URL, POSTGRESQL_USER and POSTGRESQL_PASSWORD are read by Flyway and by
+# the WildFly datasource expression resolver. They are not MicroProfile Config properties.
 # POSTGRESQL_JNDI is fixed by this script to java:/jdbc/SmartTransDS.
 # The PostgreSQL Compose file is not invoked here. Start that database first.
 
@@ -34,4 +39,9 @@ if [[ "${SKIP_BUILD:-}" != "1" ]]; then
 fi
 
 java -jar "$ROOT/launcher/target/smarttrans-launcher.jar"
-exec java -jar "$ROOT/application/target/smarttrans-jakarta-bootable.jar"
+
+wildfly_args=()
+if [[ -n "${WILDFLY_JAVA_OPTS:-}" ]]; then
+  read -r -a wildfly_args <<< "${WILDFLY_JAVA_OPTS}"
+fi
+exec java "${wildfly_args[@]}" -jar "$ROOT/application/target/smarttrans-jakarta-bootable.jar"
