@@ -40,10 +40,14 @@ docs/rapport-stage/*.synctex.gz
 *.iml
 .DS_Store
 
-# Terraform (futur)
+# Terraform
 .terraform/
+**/.terraform/*
 *.tfstate
 *.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
 *.tfvars
 *.tfvars.json
-crash.log
+!*.tfvars.example
