@@ -14,7 +14,7 @@ public class DatabaseProbe {
     @Transactional
     public long countRoles() {
         return entityManager
-                .createQuery("select count(role) from RoleSchemaProbe role", Long.class)
+                .createQuery("select count(role) from Role role", Long.class)
                 .getSingleResult();
     }
 }

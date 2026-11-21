@@ -37,7 +37,11 @@ public class ExternalConfig {
     }
 
     public boolean jwtSecretPresent() {
-        return jwtSecret.filter(value -> !value.isBlank()).isPresent();
+        return jwtSecret().isPresent();
+    }
+
+    public Optional<String> jwtSecret() {
+        return jwtSecret.filter(value -> !value.isBlank());
     }
 
     public long jwtExpirationMs() {

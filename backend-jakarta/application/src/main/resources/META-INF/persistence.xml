@@ -6,7 +6,10 @@
     <persistence-unit name="smarttransPU" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <jta-data-source>java:/jdbc/SmartTransDS</jta-data-source>
-        <class>com.smarttrans.ai.bootstrap.RoleSchemaProbe</class>
+        <class>com.smarttrans.ai.domain.Role</class>
+        <class>com.smarttrans.ai.domain.UserAccount</class>
+        <class>com.smarttrans.ai.domain.Driver</class>
+        <class>com.smarttrans.ai.domain.Vehicle</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
