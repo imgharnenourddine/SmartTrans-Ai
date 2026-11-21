@@ -291,7 +291,7 @@ Notifications are event-driven using Apache Kafka.
 * Spring AI
 * LangChain4j (future)
 * Qdrant
-* OpenAI / Mistral
+* OpenAI (Spring Boot) and Mistral (Jakarta EE)
 
 ## Cloud
 

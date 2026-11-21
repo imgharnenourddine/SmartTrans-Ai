@@ -7,7 +7,7 @@ locals {
 
 resource "aws_security_group" "alb" {
   name        = "${local.name_prefix}-alb"
-  description = "Accès HTTP et HTTPS public vers l'ALB"
+  description = "Acces HTTP et HTTPS public vers l'ALB"
   vpc_id      = aws_vpc.main.id
 
   tags = merge(local.common_tags, {
