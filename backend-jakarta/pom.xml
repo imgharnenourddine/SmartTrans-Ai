@@ -33,6 +33,7 @@
         <version.surefire>3.5.3</version.surefire>
         <version.junit>5.12.2</version.junit>
         <version.mockito>5.17.0</version.mockito>
+        <version.restassured>5.5.5</version.restassured>
         <version.testcontainers>2.0.5</version.testcontainers>
         <version.slf4j>1.7.36</version.slf4j>
         <version.jjwt>0.12.6</version.jjwt>
@@ -77,6 +78,11 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>${version.mockito}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${version.restassured}</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
