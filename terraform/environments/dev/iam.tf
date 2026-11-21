@@ -32,6 +32,10 @@ data "aws_iam_policy_document" "ecs_instance_service_discovery" {
   }
 }
 
+locals {
+  mistral_api_key_secret_arn = "arn:aws:secretsmanager:eu-west-3:409171460717:secret:smarttrans/dev/mistral-api-key-1G9NOx"
+}
+
 data "aws_iam_policy_document" "ecs_execution_secrets" {
   statement {
     sid     = "ReadApplicationSecrets"
@@ -39,6 +43,7 @@ data "aws_iam_policy_document" "ecs_execution_secrets" {
     resources = [
       aws_secretsmanager_secret.db.arn,
       aws_secretsmanager_secret.jwt.arn,
+      local.mistral_api_key_secret_arn,
     ]
   }
 }

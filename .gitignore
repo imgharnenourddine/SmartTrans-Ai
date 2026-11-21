@@ -51,3 +51,7 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 !*.tfvars.example
+
+# Installeur local AWS CLI
+/aws/
+/awscliv2.zip
