@@ -7,7 +7,7 @@ locals {
 
 resource "aws_security_group" "alb" {
   name        = "${local.name_prefix}-alb"
-  description = "Acces HTTP et HTTPS public vers l'ALB"
+  description = "Public HTTP and HTTPS access to ALB"
   vpc_id      = aws_vpc.main.id
 
   tags = merge(local.common_tags, {
@@ -46,7 +46,7 @@ resource "aws_vpc_security_group_egress_rule" "alb_to_ecs" {
 
 resource "aws_security_group" "ecs" {
   name        = "${local.name_prefix}-ecs"
-  description = "Trafic applicatif uniquement depuis l'ALB"
+  description = "Application traffic allowed only from ALB"
   vpc_id      = aws_vpc.main.id
 
   tags = merge(local.common_tags, {
@@ -58,7 +58,7 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_from_alb" {
   for_each = local.application_ports
 
   security_group_id            = aws_security_group.ecs.id
-  description                  = "Trafic ${each.key} depuis l'ALB"
+  description                  = "Trafic ${each.key} depuis ALB"
   referenced_security_group_id = aws_security_group.alb.id
   from_port                    = each.value
   to_port                      = each.value
