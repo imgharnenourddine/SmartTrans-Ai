@@ -259,6 +259,11 @@ resource "aws_ecs_service" "jakarta" {
 
   depends_on = [aws_secretsmanager_secret_version.db, aws_secretsmanager_secret_version.jwt]
 
+  # GitHub Actions publishes new revisions. Keep the deployed revision.
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+
   tags = local.common_tags
 }
 
@@ -286,6 +291,11 @@ resource "aws_ecs_service" "frontend" {
   }
 
   depends_on = [aws_lb_listener.http, aws_ecs_service.jakarta]
+
+  # GitHub Actions publishes new revisions. Keep the deployed revision.
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 
   tags = local.common_tags
 }

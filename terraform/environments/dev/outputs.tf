@@ -63,6 +63,11 @@ output "ecs_cluster_name" {
   value       = aws_ecs_cluster.main.name
 }
 
+output "github_actions_role_arn" {
+  description = "Rôle IAM assumé par GitHub Actions via OIDC."
+  value       = aws_iam_role.github_actions.arn
+}
+
 output "rds_endpoint" {
   description = "Hôte PostgreSQL privé. Le mot de passe n'est pas exposé."
   value       = aws_db_instance.main.address

@@ -1,0 +1,92 @@
+name: Deploy Jakarta
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: smarttrans-dev-jakarta
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-3
+  AWS_ROLE_ARN: arn:aws:iam::409171460717:role/smarttrans-dev-github-actions
+  ECS_CLUSTER: smarttrans-dev
+  ECS_SERVICE: smarttrans-dev-jakarta
+  ECR_REPOSITORY: smarttrans-jakarta
+  CONTAINER_NAME: jakarta
+
+jobs:
+  deploy:
+    name: Build and deploy Jakarta
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the main branch
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "Deployments are only allowed from refs/heads/main." >&2
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and push the Jakarta image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: backend-jakarta/Dockerfile
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          sbom: false
+          tags: ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+      - name: Download the task definition running on the service
+        run: |
+          set -euo pipefail
+          task_arn="$(aws ecs describe-services \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE" \
+            --query 'services[0].taskDefinition' \
+            --output text)"
+          if [[ -z "$task_arn" || "$task_arn" == "None" ]]; then
+            echo "The ECS service has no active task definition." >&2
+            exit 1
+          fi
+          aws ecs describe-task-definition \
+            --task-definition "$task_arn" \
+            --query taskDefinition \
+            --output json > task-definition.json
+
+      - name: Render the task definition with the new image
+        id: render
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+      - name: Deploy the Jakarta service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

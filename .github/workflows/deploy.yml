@@ -1,0 +1,75 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend-jakarta/**
+      - backend/src/main/resources/db/migration/**
+      - frontend/**
+  workflow_dispatch:
+    inputs:
+      service:
+        description: Service to deploy
+        type: choice
+        default: both
+        options:
+          - both
+          - jakarta
+          - frontend
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: smarttrans-dev-deploy
+  cancel-in-progress: false
+
+jobs:
+  changes:
+    name: Detect changed applications
+    runs-on: ubuntu-latest
+    outputs:
+      jakarta: ${{ steps.filter.outputs.jakarta }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Filter application paths
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            jakarta:
+              - 'backend-jakarta/**'
+              - 'backend/src/main/resources/db/migration/**'
+            frontend:
+              - 'frontend/**'
+
+  jakarta:
+    name: Jakarta
+    needs: changes
+    if: >-
+      (github.event_name == 'workflow_dispatch' && (inputs.service == 'jakarta' || inputs.service == 'both')) ||
+      (github.event_name == 'push' && needs.changes.outputs.jakarta == 'true')
+    uses: ./.github/workflows/deploy-jakarta.yml
+
+  frontend:
+    name: Frontend
+    needs:
+      - changes
+      - jakarta
+    if: >-
+      always() &&
+      needs.changes.result == 'success' &&
+      (needs.jakarta.result == 'success' || needs.jakarta.result == 'skipped') &&
+      (
+        (github.event_name == 'workflow_dispatch' && (inputs.service == 'frontend' || inputs.service == 'both')) ||
+        (github.event_name == 'push' && needs.changes.outputs.frontend == 'true')
+      )
+    uses: ./.github/workflows/deploy-frontend.yml
