@@ -1,6 +1,7 @@
 package com.smarttrans.ai;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
@@ -50,7 +51,7 @@ class JakartaRuntimeIT {
                 root.getParent().resolve("backend/src/main/resources/db/migration").toString());
         builder.environment().put("JWT_SECRET", "phase1-test-secret");
         builder.environment().put("JWT_EXPIRATION_MS", "11111");
-        builder.environment().put("OPENAI_API_KEY", "phase1-test-key");
+        builder.environment().put("MISTRAL_API_KEY", "phase1-test-key");
         builder.environment().put(
                 "WILDFLY_JAVA_OPTS",
                 "-Djboss.socket.binding.port-offset=" + PORT_OFFSET + " -DJWT_EXPIRATION_MS=22222");
@@ -70,7 +71,9 @@ class JakartaRuntimeIT {
             assertTrue(platform.contains("\"cdi\":\"active\""), platform);
             assertTrue(platform.contains("\"jpaRoles\":3"), platform);
             assertTrue(platform.contains("\"jwtSecretPresent\":true"), platform);
-            assertTrue(platform.contains("\"openAiKeyPresent\":true"), platform);
+            assertTrue(platform.contains("\"mistralKeyPresent\":true"), platform);
+            assertTrue(platform.contains("\"mistralModel\":\"mistral-small-latest\""), platform);
+            assertFalse(platform.contains("phase1-test-key"), platform);
             assertTrue(platform.contains("\"jwtExpirationMs\":22222"), platform);
             assertEquals("22222", sourceValue(platform, "SysPropConfigSource"));
             assertEquals("11111", sourceValue(platform, "EnvConfigSource"));

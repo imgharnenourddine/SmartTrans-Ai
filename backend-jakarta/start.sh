@@ -11,8 +11,8 @@
 #   FLYWAY_MIGRATIONS_PATH   defaults to ../backend/src/main/resources/db/migration
 #   SKIP_BUILD=1             reuse the already built jars
 #   WILDFLY_JAVA_OPTS        JVM arguments for WildFly, for example a system property
-#   JWT_SECRET, JWT_EXPIRATION_MS, OPENAI_API_KEY, OPENAI_MODEL,
-#   OPENAI_BASE_URL, CORS_ALLOWED_ORIGINS
+#   JWT_SECRET, JWT_EXPIRATION_MS, MISTRAL_API_KEY, MISTRAL_MODEL,
+#   MISTRAL_BASE_URL, MISTRAL_REQUEST_TIMEOUT_MS, CORS_ALLOWED_ORIGINS
 #
 # MicroProfile Config priority, highest first: Java system properties set through
 # WILDFLY_JAVA_OPTS, then environment variables, then META-INF/microprofile-config.properties.

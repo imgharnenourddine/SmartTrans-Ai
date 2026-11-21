@@ -17,16 +17,20 @@ public class ExternalConfig {
     private long jwtExpirationMs;
 
     @Inject
-    @ConfigProperty(name = "OPENAI_API_KEY")
-    private Optional<String> openAiApiKey;
+    @ConfigProperty(name = "MISTRAL_API_KEY")
+    private Optional<String> mistralApiKey;
 
     @Inject
-    @ConfigProperty(name = "OPENAI_MODEL", defaultValue = "gpt-4o-mini")
-    private String openAiModel;
+    @ConfigProperty(name = "MISTRAL_MODEL", defaultValue = "mistral-small-latest")
+    private String mistralModel;
 
     @Inject
-    @ConfigProperty(name = "OPENAI_BASE_URL", defaultValue = "https://api.openai.com/v1")
-    private String openAiBaseUrl;
+    @ConfigProperty(name = "MISTRAL_BASE_URL", defaultValue = "https://api.mistral.ai/v1")
+    private String mistralBaseUrl;
+
+    @Inject
+    @ConfigProperty(name = "MISTRAL_REQUEST_TIMEOUT_MS", defaultValue = "12000")
+    private long mistralRequestTimeoutMs;
 
     @Inject
     @ConfigProperty(name = "CORS_ALLOWED_ORIGINS", defaultValue = "http://localhost:5173")
@@ -48,20 +52,24 @@ public class ExternalConfig {
         return jwtExpirationMs;
     }
 
-    public Optional<String> openAiApiKey() {
-        return openAiApiKey.filter(value -> !value.isBlank());
+    public Optional<String> mistralApiKey() {
+        return mistralApiKey.filter(value -> !value.isBlank());
     }
 
-    public boolean openAiKeyPresent() {
-        return openAiApiKey().isPresent();
+    public boolean mistralKeyPresent() {
+        return mistralApiKey().isPresent();
     }
 
-    public String openAiModel() {
-        return openAiModel;
+    public String mistralModel() {
+        return mistralModel;
     }
 
-    public String openAiBaseUrl() {
-        return openAiBaseUrl;
+    public String mistralBaseUrl() {
+        return mistralBaseUrl;
+    }
+
+    public long mistralRequestTimeoutMs() {
+        return mistralRequestTimeoutMs > 0 ? mistralRequestTimeoutMs : 12_000L;
     }
 
     public String corsAllowedOrigins() {

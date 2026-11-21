@@ -10,13 +10,14 @@
 #     -e POSTGRESQL_USER="${POSTGRES_USER:-smarttrans}" \
 #     -e POSTGRESQL_PASSWORD \
 #     -e JWT_SECRET \
-#     -e OPENAI_API_KEY \
+#     -e MISTRAL_API_KEY \
 #     smarttrans-jakarta:local
 #
 # POSTGRESQL_PASSWORD must be the same value as POSTGRES_PASSWORD.
 # Pass it from the host environment, or with --env-file. Do not put it in this image.
-# JWT_EXPIRATION_MS, OPENAI_MODEL, OPENAI_BASE_URL and CORS_ALLOWED_ORIGINS are optional.
-# Omit JWT_SECRET and OPENAI_API_KEY, or set them to a non-empty value.
+# JWT_EXPIRATION_MS, MISTRAL_MODEL, MISTRAL_BASE_URL, MISTRAL_REQUEST_TIMEOUT_MS
+# and CORS_ALLOWED_ORIGINS are optional.
+# Omit JWT_SECRET and MISTRAL_API_KEY, or set them to a non-empty value.
 # An empty string is rejected when the deployment starts.
 
 FROM maven:3.9.12-eclipse-temurin-25 AS build
