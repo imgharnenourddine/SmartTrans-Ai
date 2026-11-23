@@ -1,0 +1,113 @@
+@startuml
+!pragma teoz true
+hide footbox
+autonumber "<b>00"
+title 3.7 — Création et planification d'une mission
+
+<style>
+root {
+  FontName Arial
+  FontSize 13
+  FontColor #1A1A1A
+  BackGroundColor #FFFFFF
+  LineColor #1F4E79
+  LineThickness 1
+  Shadowing 0
+}
+title {
+  FontName Arial
+  FontSize 16
+  FontStyle bold
+  FontColor #1F4E79
+}
+sequenceDiagram {
+  actor {
+    BackGroundColor #FFFFFF
+    LineColor #1F4E79
+    FontColor #1A1A1A
+  }
+  participant {
+    BackGroundColor #E8F1FB
+    LineColor #1F4E79
+    FontColor #1A1A1A
+    Margin 0 16
+  }
+  lifeLine {
+    LineColor #8AA4C2
+    LineStyle 4-4
+    LineThickness 1
+  }
+  group {
+    BackGroundColor #F7FBFF
+    LineColor #1F4E79
+    FontColor #1A1A1A
+    FontSize 12
+    FontStyle bold
+  }
+  arrow {
+    LineColor #1F4E79
+    FontColor #1A1A1A
+    FontSize 12
+    MaximumWidth 170
+  }
+  note {
+    BackGroundColor #FFF8DC
+    LineColor #C4A35A
+    FontColor #1A1A1A
+    FontSize 11
+  }
+}
+</style>
+
+actor "Personnel\nde gestion" as Act
+boundary "Formulaire\nmission" as UI
+control "MissionResource" as API
+control "MissionService" as SVC
+database "PostgreSQL" as DB
+
+Act -> UI : soumet la mission
+UI -> API : POST /missions
+
+alt requête refusée
+  API --> UI : 400, 401 ou 403
+  UI --> Act : affiche l'erreur
+else demande recevable
+  API -> SVC : create(demande)
+  SVC -> DB : référence déjà utilisée ?
+  alt référence en conflit
+    DB --> SVC : oui
+    SVC --> API : Conflict
+    API --> UI : 409 Conflict
+    UI --> Act : référence refusée
+  else référence libre
+    SVC -> DB : charger le client
+    opt ressource choisie
+      SVC -> DB : charger la ressource
+    end
+    alt introuvable
+      DB --> SVC : absent
+      SVC --> API : erreur métier
+      API --> UI : 422
+      UI --> Act : ressource refusée
+    else trouvé
+      SVC -> DB : enregistrer PLANIFIÉE
+      SVC -> DB : journaliser CREATE
+      DB --> SVC : mission créée
+        SVC --> API : MissionResponse
+      API --> UI : 201 Created
+      UI --> Act : ouvre le détail
+    end
+  end
+end
+
+legend bottom
+  Acteur : administrateur ou responsable transport.
+  Listes préchargées en parallèle : GET /clients, /drivers et /vehicles.
+  Le navigateur bloque l'envoi sans référence, client, départ, destination ou date.
+  400 corps invalide · 401 session absente · 403 rôle insuffisant.
+  409 référence déjà utilisée · 422 client, chauffeur ou véhicule introuvable.
+  Chauffeur et véhicule facultatifs. Auteur = utilisateur connecté.
+  Le formulaire n'envoie pas de statut : la mission est créée planifiée.
+endlegend
+
+@enduml

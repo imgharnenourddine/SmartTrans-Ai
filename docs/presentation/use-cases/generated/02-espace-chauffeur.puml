@@ -1,0 +1,71 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam dpi 160
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam linetype ortho
+skinparam nodesep 16
+skinparam ranksep 30
+skinparam defaultFontName Arial
+skinparam titleFontSize 18
+skinparam actorFontSize 14
+skinparam usecaseFontSize 13
+skinparam noteFontSize 11
+skinparam usecase {
+  BackgroundColor #E8F1FB
+  BorderColor #1F4E79
+  FontColor #1A1A1A
+}
+skinparam actor {
+  BorderColor #1F4E79
+  FontColor #1A1A1A
+}
+skinparam rectangle {
+  BorderColor #1F4E79
+  FontColor #1F4E79
+  FontStyle bold
+}
+skinparam note {
+  BackgroundColor #FFF8DC
+  BorderColor #C4A35A
+}
+
+actor Chauffeur as DRV
+
+rectangle "SmartTrans-AI\nEspace chauffeur" {
+  usecase "Se connecter" as LOGIN
+  usecase "Se déconnecter" as LOGOUT
+  usecase "Consulter mon\ntableau de bord" as DASH
+  usecase "Consulter\nmes missions" as LIST
+  usecase "Consulter le détail\nd'une mission" as DETAIL
+  usecase "Démarrer\nma mission" as START
+  usecase "Terminer\nma mission" as FINISH
+  usecase "Consulter\nmon profil" as PROFILE
+  usecase "Déclarer\nma disponibilité" as AVAIL
+}
+
+DRV --> LOGIN
+DRV --> LOGOUT
+DRV --> DASH
+DRV --> LIST
+DRV --> DETAIL
+DRV --> START
+DRV --> FINISH
+DRV --> PROFILE
+DRV --> AVAIL
+
+note right of START
+  Démarrage limité à la mission
+  qui lui est affectée, avec
+  chauffeur, véhicule, permis,
+  assurance et visite technique valides.
+end note
+
+note right of AVAIL
+  Disponible ou indisponible,
+  sauf si le chauffeur est
+  en mission ou suspendu.
+end note
+
+@enduml

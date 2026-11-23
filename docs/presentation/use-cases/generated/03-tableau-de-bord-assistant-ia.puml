@@ -1,0 +1,66 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam dpi 160
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam linetype ortho
+skinparam nodesep 18
+skinparam ranksep 30
+skinparam defaultFontName Arial
+skinparam titleFontSize 18
+skinparam actorFontSize 14
+skinparam usecaseFontSize 13
+skinparam arrowFontSize 11
+skinparam noteFontSize 11
+skinparam usecase {
+  BackgroundColor #E8F1FB
+  BorderColor #1F4E79
+  FontColor #1A1A1A
+}
+skinparam actor {
+  BorderColor #1F4E79
+  FontColor #1A1A1A
+}
+skinparam rectangle {
+  BorderColor #1F4E79
+  FontColor #1F4E79
+  FontStyle bold
+}
+skinparam note {
+  BackgroundColor #FFF8DC
+  BorderColor #C4A35A
+}
+
+actor "Personnel\nde gestion" as PG
+actor Administrateur as ADM
+actor "Responsable\ntransport" as RT
+
+ADM -right-|> PG
+RT -right-|> PG
+
+rectangle "SmartTrans-AI\nTableau de bord et assistant IA" {
+  together {
+    usecase "Consulter le\ntableau de bord" as DASH
+    usecase "Consulter les\nalertes d'échéance" as ALERTS
+    usecase "Interroger\nl'assistant" as ASK
+    usecase "Consulter le journal\ndes activités" as JOURNAL
+  }
+  usecase "Consulter le détail\nd'une activité" as DETAIL
+}
+
+JOURNAL -[hidden]right- DETAIL
+
+PG --> DASH
+PG --> ALERTS
+PG --> ASK
+PG --> JOURNAL
+
+DETAIL ..> JOURNAL : <<extend>>\n[activité sélectionnée]
+
+legend bottom
+  L'assistant répond à partir des missions, des ressources et des échéances.
+  Le détail d'une activité n'est ouvert que si une activité est sélectionnée.
+endlegend
+
+@enduml

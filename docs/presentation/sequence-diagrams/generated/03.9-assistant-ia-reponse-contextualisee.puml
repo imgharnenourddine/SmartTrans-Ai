@@ -1,0 +1,110 @@
+@startuml
+!pragma teoz true
+hide footbox
+autonumber "<b>00"
+title 3.9 — Question à l'assistant et réponse contextualisée
+
+<style>
+root {
+  FontName Arial
+  FontSize 13
+  FontColor #1A1A1A
+  BackGroundColor #FFFFFF
+  LineColor #1F4E79
+  LineThickness 1
+  Shadowing 0
+}
+title {
+  FontName Arial
+  FontSize 16
+  FontStyle bold
+  FontColor #1F4E79
+}
+sequenceDiagram {
+  actor {
+    BackGroundColor #FFFFFF
+    LineColor #1F4E79
+    FontColor #1A1A1A
+  }
+  participant {
+    BackGroundColor #E8F1FB
+    LineColor #1F4E79
+    FontColor #1A1A1A
+    Margin 0 12
+  }
+  lifeLine {
+    LineColor #8AA4C2
+    LineStyle 4-4
+    LineThickness 1
+  }
+  group {
+    BackGroundColor #F7FBFF
+    LineColor #1F4E79
+    FontColor #1A1A1A
+    FontSize 12
+    FontStyle bold
+  }
+  arrow {
+    LineColor #1F4E79
+    FontColor #1A1A1A
+    FontSize 12
+    MaximumWidth 160
+  }
+  note {
+    BackGroundColor #FFF8DC
+    LineColor #C4A35A
+    FontColor #1A1A1A
+    FontSize 11
+  }
+}
+</style>
+
+actor "Personnel\nde gestion" as Act
+boundary "Page\nAssistant" as UI
+control "AssistantResource" as API
+control "AssistantService" as SVC
+database "PostgreSQL" as DB
+boundary "API Mistral" as LLM
+
+Act -> UI : pose une question
+UI -> API : POST /assistant/ask
+
+alt requête refusée
+  API --> UI : 400, 401 ou 403
+  UI --> Act : affiche l'erreur
+else question acceptée
+  API -> SVC ++ : ask(message)
+  loop mot clé
+    SVC -> DB : missions, clients, ressources
+  end
+  opt alerte ou suggestion
+    SVC -> DB : échéances et disponibilités
+  end
+  SVC -> DB : compter les missions
+  DB --> SVC : contexte métier
+  alt clé absente
+    SVC -> SVC : réponse ancrée
+  else clé présente
+    SVC -> LLM : POST /chat/completions
+    alt texte reçu
+      LLM --> SVC : réponse contextualisée
+    else échec ou vide
+      LLM --> SVC : aucun contenu
+      SVC -> SVC : réponse ancrée
+    end
+  end
+  SVC --> API -- : réponse, mode, citations
+  API --> UI : 200 OK
+  UI --> Act : affiche réponse et sources
+end
+
+legend bottom
+  Acteur : administrateur ou responsable transport. Envoi bloqué sous 2 caractères.
+  La question s'affiche avant l'appel. 400 message invalide · 401 session absente · 403 rôle insuffisant.
+  Chaque mot clé interroge missions, chauffeurs, véhicules et clients (8 résultats maximum).
+  Échéances et disponibilités : alerte, suggestion, ou question sur un permis, une assurance ou une visite.
+  Sans clé Mistral, ou si l'appel échoue : mode GROUNDED, réponse extraite des données.
+  Sinon mode LLM, modèle mistral-small-latest. Les citations viennent toujours du contexte.
+endlegend
+
+@enduml

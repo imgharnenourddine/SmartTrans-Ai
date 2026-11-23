@@ -1,0 +1,88 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam dpi 160
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam linetype ortho
+skinparam nodesep 18
+skinparam ranksep 28
+skinparam defaultFontName Arial
+skinparam titleFontSize 18
+skinparam actorFontSize 14
+skinparam usecaseFontSize 13
+skinparam arrowFontSize 11
+skinparam noteFontSize 11
+skinparam usecase {
+  BackgroundColor #E8F1FB
+  BorderColor #1F4E79
+  FontColor #1A1A1A
+}
+skinparam actor {
+  BorderColor #1F4E79
+  FontColor #1A1A1A
+}
+skinparam rectangle {
+  BorderColor #1F4E79
+  FontColor #1F4E79
+  FontStyle bold
+}
+skinparam note {
+  BackgroundColor #FFF8DC
+  BorderColor #C4A35A
+}
+
+actor "Personnel\nde gestion" as PG
+actor Administrateur as ADM
+actor "Responsable\ntransport" as RT
+
+ADM -right-|> PG
+RT -right-|> PG
+
+rectangle "SmartTrans-AI\nGestion des opérations de transport" {
+  together {
+    usecase "Se connecter" as LOGIN
+    usecase "Se déconnecter" as LOGOUT
+    usecase "Gérer les clients" as CLIENTS
+    usecase "Gérer les chauffeurs" as DRIVERS
+    usecase "Gérer les véhicules" as VEHICLES
+    usecase "Consulter\nles missions" as LIST
+    usecase "Modifier\nune mission" as EDIT
+    usecase "Annuler\nune mission" as CANCEL
+    usecase "Supprimer\nune mission" as DELETE
+    usecase "Planifier\nune mission" as PLAN
+  }
+  together {
+    usecase "Filtrer\nles missions" as FILTER
+    usecase "Affecter\nles ressources" as ASSIGN
+    usecase "Choisir un client" as CLIENT
+  }
+}
+
+LIST -[hidden]right- FILTER
+PLAN -[hidden]right- ASSIGN
+ASSIGN -[hidden]right- CLIENT
+
+PG --> LOGIN
+PG --> LOGOUT
+PG --> CLIENTS
+PG --> DRIVERS
+PG --> VEHICLES
+PG --> PLAN
+PG --> LIST
+PG --> EDIT
+PG --> CANCEL
+PG --> DELETE
+
+PLAN ..> CLIENT : <<include>>
+ASSIGN ..> PLAN : <<extend>>\n[ressources choisies]
+FILTER ..> LIST : <<extend>>\n[filtre appliqué]
+
+legend bottom
+  Planifier une mission exige un client.
+  L'affectation du chauffeur et du véhicule est facultative à la création,
+  puis possible tant que la mission est planifiée.
+  Une mission ne peut être supprimée que si elle est planifiée ou annulée.
+endlegend
+
+@enduml
